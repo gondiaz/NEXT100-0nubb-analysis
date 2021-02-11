@@ -22,11 +22,12 @@ OUTFILE="$NODEOUTDIR/nexus_${SLURM_ARRAY_TASK_ID}_0nubb"
 OUTDIR="$LUSTRE/NEXT100/0nubb/nexus/"
 mkdir -p $NODEOUTDIR $OUTDIR
 
+INI_MACRO="$NODEOUTDIR/nexus.init.${SLURM_ARRAY_TASK_ID}.mac"
+CFG_MACRO="$NODEOUTDIR/nexus.config.${SLURM_ARRAY_TASK_ID}.mac"
+
 #------------------------------------
 #--------- Init macro ---------------
 #------------------------------------
-INI_MACRO="$NODEOUTDIR/nexus.init.${SLURM_ARRAY_TASK_ID}.mac"
-
 # physics lists
 echo "/PhysicsList/RegisterPhysics G4EmStandardPhysics_option4" >> ${INI_MACRO}
 echo "/PhysicsList/RegisterPhysics G4DecayPhysics"              >> ${INI_MACRO}
@@ -46,14 +47,11 @@ echo "/Actions/RegisterTrackingAction DEFAULT"                  >> ${INI_MACRO}
 
 # persistency
 echo "/nexus/RegisterMacro ${CFG_MACRO}"                        >> ${INI_MACRO}
-echo " "                                                        >> ${INI_MACRO}
 
 
 #------------------------------------
 #--------- Config macro -------------
 #------------------------------------
-CFG_MACRO="$NODEOUTDIR/nexus.config.${SLURM_ARRAY_TASK_ID}.mac"
-
 # verbosity
 echo "/run/verbose      0"                                      >> ${CFG_MACRO}
 echo "/event/verbose    0"                                      >> ${CFG_MACRO}
@@ -89,7 +87,6 @@ echo "/process/optical/processActivation Scintillation ${FULLSIM}" >> ${CFG_MACR
 echo "/nexus/random_seed            ${RNDSEED}"                 >> ${CFG_MACRO}
 echo "/nexus/persistency/start_id   ${STARTID}"                 >> ${CFG_MACRO}
 echo "/nexus/persistency/outputFile ${OUTFILE}"                 >> ${CFG_MACRO}
-echo " "                                                        >> ${CFG_MACRO}
 
 
 #---------------------------------
