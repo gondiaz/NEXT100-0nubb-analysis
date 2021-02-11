@@ -84,9 +84,10 @@ echo "/process/optical/processActivation Cerenkov      ${FULLSIM}" >> ${CFG_MACR
 echo "/process/optical/processActivation Scintillation ${FULLSIM}" >> ${CFG_MACRO}
 
 # persistency
-echo "/nexus/random_seed            ${RNDSEED}"                 >> ${CFG_MACRO}
-echo "/nexus/persistency/start_id   ${STARTID}"                 >> ${CFG_MACRO}
-echo "/nexus/persistency/outputFile ${OUTFILE}"                 >> ${CFG_MACRO}
+echo "/nexus/random_seed            ${RNDSEED}" >> ${CFG_MACRO}
+echo "/nexus/persistency/start_id   ${STARTID}" >> ${CFG_MACRO}
+echo "/nexus/persistency/outputFile ${OUTFILE}" >> ${CFG_MACRO}
+echo "/nexus/persistency/eventType  bb0nu"      >> ${CFG_MACRO}
 
 
 #---------------------------------
