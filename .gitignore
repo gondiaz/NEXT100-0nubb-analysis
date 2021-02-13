@@ -1,3 +1,5 @@
+*.DS_Store
+
 nexus_job_templates/local_test_utility/*.mac
 nexus_job_templates/local_test_utility/*.h5
 
