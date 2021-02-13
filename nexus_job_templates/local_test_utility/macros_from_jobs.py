@@ -3,7 +3,7 @@ import os
 #------------------------------------
 #------- Configuration --------------
 #------------------------------------
-batchjob_filename = os.path.expandvars("$HOME/NEXT/NEXT100-0nubb-analysis/nexus_job_templates/NEXT100_0nubb.sh")
+batchjob_filename = os.path.expandvars("$HOME/NEXT/NEXT100-0nubb-analysis/nexus_job_templates/NEXT100_PSF_generator.sh")
 
 out_init_mac = os.path.expandvars("$PWD/test.init.mac")
 out_conf_mac = os.path.expandvars("$PWD/test.config.mac")
@@ -13,6 +13,7 @@ OUTFILE=os.path.expandvars("$PWD/nexus_test")
 FULLSIM="false"
 RNDSEED="1"
 STARTID="0"
+NPHOTONS="1"
 
 
 #---------------------------------
@@ -36,6 +37,7 @@ if __name__ == "__main__":
     init_mac = init_mac.replace("${DLY_MACRO}", out_dlyd_mac)
 
     conf_mac = conf_mac.replace("/nexus/RegisterMacro ${CFG_MACRO}\n", "")
+    conf_mac = conf_mac.replace("${NPHOTONS}", NPHOTONS)
     conf_mac = conf_mac.replace("${FULLSIM}", FULLSIM)
     conf_mac = conf_mac.replace("${RNDSEED}", RNDSEED)
     conf_mac = conf_mac.replace("${STARTID}", STARTID)
