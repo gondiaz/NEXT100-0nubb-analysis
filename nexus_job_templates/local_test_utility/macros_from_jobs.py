@@ -45,9 +45,12 @@ if __name__ == "__main__":
 
     dlyd_mac = dlyd_mac.replace("/nexus/RegisterDelayedMacro ${DLY_MACRO}\n", "")
 
+    print("Creating init macro:", out_init_mac)
     with open(out_init_mac, "w") as init:
         init.write(init_mac)
+    print("Creating config macro:", out_conf_mac)
     with open(out_conf_mac, "w") as conf:
         conf.write(conf_mac)
+    print("Creating delayed macro:", out_dlyd_mac)
     with open(out_dlyd_mac, "w") as dlyd:
         dlyd.write(dlyd_mac)
