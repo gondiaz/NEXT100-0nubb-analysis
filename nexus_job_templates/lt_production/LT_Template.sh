@@ -70,9 +70,9 @@ echo "/tracking/verbose 0"                                      >> $CFG_MACRO
 # generator
 echo "/Generator/ScintGenerator/region      AD_HOC"             >> $CFG_MACRO
 echo "/Generator/ScintGenerator/nphotons   $NPHOTONS"           >> $CFG_MACRO
-echo "/Geometry/NextNew/specific_vertex_X  $X mm"               >> $CFG_MACRO
-echo "/Geometry/NextNew/specific_vertex_Y  $Y mm"               >> $CFG_MACRO
-echo "/Geometry/NextNew/specific_vertex_Z  $Z mm"               >> $CFG_MACRO
+echo "/Geometry/Next100/specific_vertex_X  $X mm"               >> $CFG_MACRO
+echo "/Geometry/Next100/specific_vertex_Y  $Y mm"               >> $CFG_MACRO
+echo "/Geometry/Next100/specific_vertex_Z  $Z mm"               >> $CFG_MACRO
 
 # geometry
 # echo "/Geometry/PmtR11410/time_binning 1. nanosecond"           >> $CFG_MACRO
