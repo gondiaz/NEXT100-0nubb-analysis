@@ -6,7 +6,7 @@ import numpy as np
 #----- Configuration ----
 #------------------------
 template   = os.path.expandvars("$PWD/LT_Template.sh")
-jobsoutdir = os.path.expandvars("$LUSTRE/NEXUS/LT_generation/NEXT100/{z}/")
+jobsoutdir = os.path.expandvars("$LUSTRE/NEXUS/LT_generation/NEXT100/{z}/jobs/")
 
 z    = np.array([-5.5])
 rmax = 492
