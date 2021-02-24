@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --time 24:00:00          # Maximum execution time (HH:MM:SS)
-#SBATCH --job-name 0nubb
+#SBATCH --job-name tl
 #SBATCH -o /mnt/lustre/scratch/home/usc/ie/gdl/NEXUS/logs/%A_%a.out        # Standard output
 #SBATCH -e /mnt/lustre/scratch/home/usc/ie/gdl/NEXUS/logs/%A_%a.err        # Standard error
 ##SBATCH --qos shared_short
@@ -40,7 +40,7 @@ echo "/PhysicsList/RegisterPhysics G4StepLimiterPhysics"        >> ${INI_MACRO}
 echo "/PhysicsList/RegisterPhysics G4OpticalPhysics"            >> ${INI_MACRO}
 
 # geometry and generator
-echo "/Geometry/RegisterGeometry NEXT100_OPT"                   >> ${INI_MACRO}
+echo "/Geometry/RegisterGeometry NEXT100"                       >> ${INI_MACRO}
 echo "/Generator/RegisterGenerator ION"                         >> ${INI_MACRO}
 
 # actions
