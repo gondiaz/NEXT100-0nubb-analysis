@@ -66,7 +66,7 @@ echo "/Generator/IonGenerator/mass_number 208"                  >> ${CFG_MACRO}
 echo "/Generator/IonGenerator/region ${REGION}"                 >> ${CFG_MACRO}
 
 # actions
-echo "/Actions/DefaultEventAction/energy_threshold 0.6 MeV"     >> ${CFG_MACRO}
+echo "/Actions/DefaultEventAction/energy_threshold 2.0 MeV"     >> ${CFG_MACRO}
 echo "/Actions/DefaultEventAction/max_energy       5.0 MeV"     >> ${CFG_MACRO}
 
 # geometry
