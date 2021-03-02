@@ -6,8 +6,10 @@
 #SBATCH -e /mnt/lustre/scratch/home/usc/ie/gdl/NEXUS/logs/%A_%a.err        # Standard error
 ##SBATCH --qos shared_short
 ##SBATCH --partition shared
-#SBATCH --qos amd-shared
-#SBATCH --partition amd-shared
+##SBATCH --qos amd-shared
+##SBATCH --partition amd-shared
+#SBATCH --qos cl-intel-shared
+#SBATCH --partition cl-intel-shared
 #SBATCH -n 1
 #SBATCH -N 1
 
