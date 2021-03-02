@@ -37,7 +37,7 @@ echo "/PhysicsList/RegisterPhysics G4StepLimiterPhysics"        >> ${INI_MACRO}
 echo "/PhysicsList/RegisterPhysics G4OpticalPhysics"            >> ${INI_MACRO}
 
 # geometry and generator
-echo "/Geometry/RegisterGeometry NEXT100"                       >> ${INI_MACRO}
+echo "/Geometry/RegisterGeometry NEXT100_OPT"                   >> ${INI_MACRO}
 echo "/Generator/RegisterGenerator    DECAY0"                   >> ${INI_MACRO}
 
 # actions
