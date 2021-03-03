@@ -28,7 +28,6 @@ mkdir -p $NODEOUTDIR $OUTDIR
 
 INI_MACRO="$NODEOUTDIR/nexus.init.${SLURM_ARRAY_TASK_ID}.mac"
 CFG_MACRO="$NODEOUTDIR/nexus.config.${SLURM_ARRAY_TASK_ID}.mac"
-DLY_MACRO="$NODEOUTDIR/nexus.dlyd.${SLURM_ARRAY_TASK_ID}.mac"
 
 #------------------------------------
 #--------- Init macro ---------------
@@ -52,7 +51,6 @@ echo "/Actions/RegisterTrackingAction DEFAULT"                  >> ${INI_MACRO}
 
 # persistency
 echo "/nexus/RegisterMacro ${CFG_MACRO}"                        >> ${INI_MACRO}
-echo "/nexus/RegisterDelayedMacro ${DLY_MACRO}"                 >> ${INI_MACRO}
 
 #------------------------------------
 #--------- Config macro -------------
