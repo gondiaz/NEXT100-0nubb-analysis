@@ -19,9 +19,9 @@ NEVENTS=10
 RNDSEED=$(( SLURM_ARRAY_TASK_ID+1 ))
 STARTID=$(( SLURM_ARRAY_TASK_ID*NEVENTS ))
 NODEOUTDIR="$LUSTRE_SCRATCH/$SLURM_ARRAY_JOB_ID/$SLURM_ARRAY_TASK_ID/"
-OUTFILE="$NODEOUTDIR/nexus_${SLURM_ARRAY_TASK_ID}_0nubb"
+OUTFILE="$NODEOUTDIR/nexus_${SLURM_ARRAY_TASK_ID}_2nubb"
 
-OUTDIR="$LUSTRE/NEXT100/0nubb/nexus/"
+OUTDIR="$LUSTRE/NEXT100/2nubb/nexus/"
 mkdir -p $NODEOUTDIR $OUTDIR
 
 INI_MACRO="$NODEOUTDIR/nexus.init.${SLURM_ARRAY_TASK_ID}.mac"
@@ -75,7 +75,8 @@ echo "/Generator/Decay0Interface/region ACTIVE"                 >> ${CFG_MACRO}
 echo "/Generator/Decay0Interface/EnergyThreshold 0. keV"        >> ${CFG_MACRO}
 
 # actions
-echo "/Actions/DefaultEventAction/energy_threshold 0. MeV"     >> ${CFG_MACRO}
+echo "/Actions/DefaultEventAction/energy_threshold 2.0 MeV"     >> ${CFG_MACRO}
+echo "/Actions/DefaultEventAction/max_energy       3.0 MeV"     >> ${CFG_MACRO}
 
 # geometry
 # echo "/Geometry/PmtR11410/time_binning 1. nanosecond"           >> ${CFG_MACRO}

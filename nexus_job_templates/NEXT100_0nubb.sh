@@ -65,6 +65,10 @@ echo "/Generator/Decay0Interface/Xe136DecayMode 1"              >> ${CFG_MACRO}
 echo "/Generator/Decay0Interface/Ba136FinalState 0"             >> ${CFG_MACRO}
 echo "/Generator/Decay0Interface/region ACTIVE"                 >> ${CFG_MACRO}
 
+# actions
+echo "/Actions/DefaultEventAction/energy_threshold 2.0 MeV"     >> ${CFG_MACRO}
+echo "/Actions/DefaultEventAction/max_energy       3.0 MeV"     >> ${CFG_MACRO}
+
 # geometry
 # echo "/Geometry/PmtR11410/time_binning 1. nanosecond"           >> ${CFG_MACRO}
 # echo "/Geometry/SiPMSensl/time_binning 1. microsecond"          >> ${CFG_MACRO}

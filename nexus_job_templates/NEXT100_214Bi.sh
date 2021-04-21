@@ -69,7 +69,7 @@ echo "/Generator/IonGenerator/region ${REGION}"                 >> ${CFG_MACRO}
 
 # actions
 echo "/Actions/DefaultEventAction/energy_threshold 2.0 MeV"     >> ${CFG_MACRO}
-echo "/Actions/DefaultEventAction/max_energy       5.0 MeV"     >> ${CFG_MACRO}
+echo "/Actions/DefaultEventAction/max_energy       3.0 MeV"     >> ${CFG_MACRO}
 
 # geometry
 # echo "/Geometry/PmtR11410/time_binning 1. nanosecond"           >> ${CFG_MACRO}
