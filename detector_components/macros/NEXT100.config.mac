@@ -1,12 +1,23 @@
-/Generator/ScintGenerator/region     AD_HOC
-/Generator/ScintGenerator/nphotons   1
-/Geometry/Next100/specific_vertex_X  0  cm
-/Geometry/Next100/specific_vertex_Y  0  cm
-/Geometry/Next100/specific_vertex_Z  25 cm
+#/Generator/ScintGenerator/region     AD_HOC
+#/Generator/ScintGenerator/nphotons   1
+
+#/Geometry/Next100/specific_vertex_X  0  cm
+#/Geometry/Next100/specific_vertex_Y  0  cm
+#/Geometry/Next100/specific_vertex_Z  25 cm
+
+/Generator/IonGenerator/atomic_number 81
+/Generator/IonGenerator/mass_number   208
+/Generator/IonGenerator/region SIPM_BOARD
+
+# actions
+#/Actions/DefaultEventAction/energy_threshold 2.0 MeV"
+#/Actions/DefaultEventAction/max_energy       3.0 MeV"
+
 /control/verbose  0
 /run/verbose      0
 /event/verbose    0
-/tracking/verbose 0
+/tracking/verbose 1
+
 /Geometry/Next100/max_step_size     1. mm
 /Geometry/Next100/pressure          10.2 bar
 /Geometry/Next100/sc_yield          25510. 1/MeV
@@ -14,12 +25,14 @@
 /Geometry/Next100/drift_long_diff   0.3 mm/sqrt(cm)
 /Geometry/Next100/e_lifetime        12. ms
 /Geometry/Next100/EL_field          12.8 kilovolt/cm
-/Geometry/Next100/elfield                        true
-/PhysicsList/Nexus/clustering                    true
-/PhysicsList/Nexus/drift                         true
-/PhysicsList/Nexus/electroluminescence           true
-/process/optical/processActivation Cerenkov      true
-/process/optical/processActivation Scintillation true
+/Geometry/Next100/elfield                        false
+
+/PhysicsList/Nexus/clustering                    false
+/PhysicsList/Nexus/drift                         false
+/PhysicsList/Nexus/electroluminescence           false
+/process/optical/processActivation Cerenkov      false
+/process/optical/processActivation Scintillation false
+
 /nexus/random_seed 1
 /nexus/persistency/start_id 0
-#/nexus/persistency/outputFile out
+/nexus/persistency/outputFile out

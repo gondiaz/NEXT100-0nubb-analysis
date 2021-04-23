@@ -4,10 +4,15 @@
 /PhysicsList/RegisterPhysics NexusPhysics
 /PhysicsList/RegisterPhysics G4StepLimiterPhysics
 /PhysicsList/RegisterPhysics G4OpticalPhysics
-/Geometry/RegisterGeometry NEXT100
-/Generator/RegisterGenerator SCINTILLATION
+
+/Geometry/RegisterGeometry NEXT100_OPT
+
+#/Generator/RegisterGenerator SCINTILLATION
+/Generator/RegisterGenerator ION
+
 /Actions/RegisterRunAction      DEFAULT
-/Actions/RegisterEventAction    SAVE_ALL
-/Actions/RegisterTrackingAction OPTICAL
-/Actions/RegisterSteppingAction ANALYSIS
+#/Actions/RegisterEventAction    DEFAULT
+#/Actions/RegisterTrackingAction DEFAULT
+/Actions/RegisterSteppingAction DEFAULT
+
 /nexus/RegisterMacro /Users/gonzalo/NEXT/NEXT100-0nubb-analysis/detector_components/macros/NEXT100.config.mac
