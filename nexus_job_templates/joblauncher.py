@@ -26,12 +26,11 @@ joblaunch_command   = "sbatch --array={nl}-{nu} {jobfilename}"
 queue_limit = 1
 
 event_type = "214Bi"
-pdf_prod   = True
 jobfilename = os.path.expandvars(f"$HOME/NEXT/NEXT100-0nubb-analysis/nexus_job_templates/NEXT100_{event_type}.sh")
 
 # time factor
 f = 3600*24*30*6
-if (event_type == "214Bi") and not pdf_prod:
+if (event_type == "214Bi"):
     REGIONS = {"TP_COPPER_PLATE"  : int(f*1.99e-4),
                "SIPM_BOARD"       : int(f*8.10e-3),
                "EP_COPPER_PLATE"  : int(f*6.45e-4),
@@ -40,7 +39,7 @@ if (event_type == "214Bi") and not pdf_prod:
                "INTERNAL_PMT_BASE": int(f*4.20e-2),
                "LIGHT_TUBE"       : int(f*1.09e-2)
                }
-elif (event_type == "208Tl") and not pdf_prod:
+elif (event_type == "208Tl"):
     REGIONS = {"TP_COPPER_PLATE"  : int(f*6.81e-5),
                "SIPM_BOARD"       : int(f*1.30e-3),
                "EP_COPPER_PLATE"  : int(f*2.20e-4),
@@ -50,7 +49,7 @@ elif (event_type == "208Tl") and not pdf_prod:
                "LIGHT_TUBE"       : int(f*1.51e-3)
                }
 else:
-    REGIONS = {"ACTIVE": 300}
+    REGIONS = {"NO_REGION": 300}
 
 
 njobs = 250
