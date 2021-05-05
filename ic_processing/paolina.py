@@ -14,17 +14,20 @@ from invisible_cities.evm              import event_model       as evm
 from invisible_cities.reco             import paolina_functions as plf
 from invisible_cities.cities.esmeralda import types_dict_tracks
 
-from invisible_cities.io.hits_io     import hits_from_df
+from invisible_cities.io.dst_io  import df_writer
+from invisible_cities.io.hits_io import hits_from_df
+
+from invisible_cities.cities.components import index_tables
 
 import argparse
 parser = argparse.ArgumentParser(description="")
-parser.add_argument("input_dir"   , type=str)
-parser.add_argument("out_filename", type=str)
+parser.add_argument("input_dir", type=str)
+parser.add_argument("out_dir"  , type=str)
 args = parser.parse_args()
 
 
-input_dir    = os.path.expandvars(args.input_dir)
-out_filename = os.path.expandvars(args.out_filename)
+input_dir = os.path.expandvars(args.input_dir)
+out_dir   = os.path.expandvars(args.out_dir)
 paolina_params = dict( vox_size         = [10 * units.mm, 10 * units.mm, 10 * units.mm]
                      , strict_vox_size  = False
                      , energy_threshold = 10 * units.keV
@@ -32,7 +35,9 @@ paolina_params = dict( vox_size         = [10 * units.mm, 10 * units.mm, 10 * un
                      , blob_radius      = 21 * units.mm
                      , max_num_hits     = 30000)
 
-filenames = sorted(glob.glob(input_dir + "/*.h5"))
+
+get_file_number = lambda filename: int(filename.split("/")[-1].split("_")[1])
+filenames = sorted(glob.glob(input_dir + "/*.h5"), key=get_file_number)
 
 
 def track_blob_info_creator_extractor(vox_size         : [float, float, float],
@@ -130,7 +135,6 @@ if __name__ == "__main__":
                "xb2", "yb2", "zb2", "eb2", "ovlp_e"]
 
     data   = namedtuple("data", columns) # auxiliar namedtuple
-    out_df = pd.DataFrame(columns=columns)
 
     paolina_algorithm = track_blob_info_creator_extractor(**paolina_params)
 
@@ -138,9 +142,16 @@ if __name__ == "__main__":
         sys.stdout.write(f"Proccessing {i}/{len(filenames)} \r")
         sys.stdout.flush()
 
+        out_df = pd.DataFrame(columns=columns)
+
         try:
             DECO = pd.read_hdf(filename, "DECO/Events")
         except KeyError:
+            # save empty file
+            out_filename = out_dir + f"/pdata_{get_file_number(filename)}.h5"
+            with tb.open_file(out_filename, "w") as h5out:
+                df_writer(h5out, out_df, group_name="tracks", table_name="events")
+            index_tables(out_filename)
             continue
 
         for (event, peak), deco in DECO.groupby(["event", "npeak"]):
@@ -169,6 +180,8 @@ if __name__ == "__main__":
 
                 out_df = out_df.append(info._asdict(), ignore_index=True)
 
-    out_df = out_df.apply(pd.to_numeric)
-    print("Saving data to", out_filename)
-    out_df.to_hdf(out_filename, key="tracks")
+        # write output per file
+        out_filename = out_dir + f"/pdata_{get_file_number(filename)}.h5"
+        with tb.open_file(out_filename, "w") as h5out:
+            df_writer(h5out, out_df.apply(pd.to_numeric), group_name="tracks", table_name="events")
+        index_tables(out_filename)

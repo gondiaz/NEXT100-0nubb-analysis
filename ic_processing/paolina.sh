@@ -10,12 +10,13 @@
 #SBATCH -N 1
 
 start=`date +%s`
+source $HOME/Software/ic_setup.sh
 
 ISOTOPE="208Tl"
 REGION="SIPM_BOARD"
 
-source $HOME/Software/ic_setup.sh
-python paolina.py $LUSTRE/NEXT100/$ISOTOPE/$REGION/detsim/prod/beersheba $LUSTRE/NEXT100/$ISOTOPE/$REGION/detsim/prod/pdata.h5
+mkdir $LUSTRE/NEXT100/$ISOTOPE/$REGION/detsim/prod/pdata/
+python paolina.py $LUSTRE/NEXT100/$ISOTOPE/$REGION/detsim/prod/beersheba $LUSTRE/NEXT100/$ISOTOPE/$REGION/detsim/prod/pdata/
 
 end=`date +%s`
 let deltatime=end-start
