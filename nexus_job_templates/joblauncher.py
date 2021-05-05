@@ -39,6 +39,7 @@ if (event_type == "214Bi"):
                "INTERNAL_PMT_BASE": int(f*4.20e-2),
                "LIGHT_TUBE"       : int(f*1.09e-2)
                }
+
 elif (event_type == "208Tl"):
     REGIONS = {"TP_COPPER_PLATE"  : int(f*6.81e-5),
                "SIPM_BOARD"       : int(f*1.30e-3),
@@ -48,6 +49,13 @@ elif (event_type == "208Tl"):
                "INTERNAL_PMT_BASE": int(f*5.35e-2),
                "LIGHT_TUBE"       : int(f*1.51e-3)
                }
+
+elif (event_type == "2nubb"):
+    y   = 365*24*3600 # year to seconds
+    T12 = 2.34e21*y # kam-land
+    A   = np.log(2) * 100./136. * 1e27 * (1/T12)
+    REGIONS = {"ACTIVE": int(f*A)}
+
 else:
     REGIONS = {"NO_REGION": 300}
 
