@@ -138,7 +138,10 @@ if __name__ == "__main__":
         sys.stdout.write(f"Proccessing {i}/{len(filenames)} \r")
         sys.stdout.flush()
 
-        DECO = pd.read_hdf(filename, "DECO/Events")
+        try:
+            DECO = pd.read_hdf(filename, "DECO/Events")
+        except KeyError:
+            continue
 
         for (event, peak), deco in DECO.groupby(["event", "npeak"]):
 
