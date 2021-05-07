@@ -7,7 +7,6 @@ import tables as tb
 from collections import namedtuple
 
 from invisible_cities.core     import system_of_units as units
-from invisible_cities.database import load_db
 
 from invisible_cities.types.ic_types   import xy
 from invisible_cities.evm              import event_model       as evm
@@ -21,23 +20,19 @@ from invisible_cities.cities.components import index_tables
 
 import argparse
 parser = argparse.ArgumentParser(description="")
-parser.add_argument("input_dir", type=str)
-parser.add_argument("out_dir"  , type=str)
+parser.add_argument("in_filename", type=str)
+parser.add_argument("out_filename"  , type=str)
 args = parser.parse_args()
 
 
-input_dir = os.path.expandvars(args.input_dir)
-out_dir   = os.path.expandvars(args.out_dir)
+in_filename  = os.path.expandvars(args.in_filename)
+out_filename = os.path.expandvars(args.out_filename)
 paolina_params = dict( vox_size         = [10 * units.mm, 10 * units.mm, 10 * units.mm]
                      , strict_vox_size  = False
                      , energy_threshold = 10 * units.keV
                      , min_voxels       = 3
                      , blob_radius      = 21 * units.mm
                      , max_num_hits     = 30000)
-
-
-get_file_number = lambda filename: int(filename.split("/")[-1].split("_")[1])
-filenames = sorted(glob.glob(input_dir + "/*.h5"), key=get_file_number)
 
 
 def track_blob_info_creator_extractor(vox_size         : [float, float, float],
@@ -138,50 +133,44 @@ if __name__ == "__main__":
 
     paolina_algorithm = track_blob_info_creator_extractor(**paolina_params)
 
-    for i, filename in enumerate(filenames, 1):
-        sys.stdout.write(f"Proccessing {i}/{len(filenames)} \r")
-        sys.stdout.flush()
+    out_df = pd.DataFrame(columns=columns)
 
-        out_df = pd.DataFrame(columns=columns)
-
-        try:
-            DECO = pd.read_hdf(filename, "DECO/Events")
-        except KeyError:
-            # save empty file
-            out_filename = out_dir + f"/pdata_{get_file_number(filename)}.h5"
-            with tb.open_file(out_filename, "w") as h5out:
-                df_writer(h5out, out_df, group_name="tracks", table_name="events")
-            index_tables(out_filename)
-            continue
-
-        for (event, peak), deco in DECO.groupby(["event", "npeak"]):
-
-            # pre-proccess
-            deco.loc[:, "time"] = 0
-            deco.loc[:, "Ec"]   = deco["E"]
-            deco.loc[:, "Ep"]   = deco["E"]
-            deco.loc[:, ("Q", "Xrms", "Yrms", "nsipm")] = np.nan
-
-            # Paolina
-            hitc = hits_from_df(deco)[event]
-            df, voxels, track_hitc, out_of_map = paolina_algorithm(hitc)
-
-            for tid, track in df.groupby("trackID"):
-                track = track.iloc[0]
-
-                info = data(event=event, peak=peak, track=tid, ntracks=int(track.numb_of_tracks), out_of_map=out_of_map,
-                            nvoxels=int(track.numb_of_voxels), nhits=int(track.numb_of_hits), length=track.length,
-                            x=track.x_ave, y=track.y_ave, z=track.z_ave, r=track.r_ave, energy=track.energy,
-                            xmin=track.x_min, ymin=track.y_min, zmin=track.z_min, rmin=track.r_min,
-                            xmax=track.x_max, ymax=track.y_max, zmax=track.z_max, rmax=track.r_max,
-                            xb1=track.blob1_x, yb1=track.blob1_y, zb1=track.blob1_z, eb1=track.eblob1,
-                            xb2=track.blob2_x, yb2=track.blob2_y, zb2=track.blob2_z, eb2=track.eblob2,
-                            ovlp_e=track.ovlp_blob_energy)
-
-                out_df = out_df.append(info._asdict(), ignore_index=True)
-
-        # write output per file
-        out_filename = out_dir + f"/pdata_{get_file_number(filename)}.h5"
+    try:
+        DECO = pd.read_hdf(in_filename, "DECO/Events")
+    except KeyError:
+        # save empty file
         with tb.open_file(out_filename, "w") as h5out:
-            df_writer(h5out, out_df.apply(pd.to_numeric), group_name="tracks", table_name="events")
+            df_writer(h5out, out_df, group_name="tracks", table_name="events")
         index_tables(out_filename)
+        sys.exit()
+
+    for (event, peak), deco in DECO.groupby(["event", "npeak"]):
+
+        # pre-proccess
+        deco.loc[:, "time"] = 0
+        deco.loc[:, "Ec"]   = deco["E"]
+        deco.loc[:, "Ep"]   = deco["E"]
+        deco.loc[:, ("Q", "Xrms", "Yrms", "nsipm")] = np.nan
+
+        # Paolina
+        hitc = hits_from_df(deco)[event]
+        df, voxels, track_hitc, out_of_map = paolina_algorithm(hitc)
+
+        for tid, track in df.groupby("trackID"):
+            track = track.iloc[0]
+
+            info = data(event=event, peak=peak, track=tid, ntracks=int(track.numb_of_tracks), out_of_map=out_of_map,
+                        nvoxels=int(track.numb_of_voxels), nhits=int(track.numb_of_hits), length=track.length,
+                        x=track.x_ave, y=track.y_ave, z=track.z_ave, r=track.r_ave, energy=track.energy,
+                        xmin=track.x_min, ymin=track.y_min, zmin=track.z_min, rmin=track.r_min,
+                        xmax=track.x_max, ymax=track.y_max, zmax=track.z_max, rmax=track.r_max,
+                        xb1=track.blob1_x, yb1=track.blob1_y, zb1=track.blob1_z, eb1=track.eblob1,
+                        xb2=track.blob2_x, yb2=track.blob2_y, zb2=track.blob2_z, eb2=track.eblob2,
+                        ovlp_e=track.ovlp_blob_energy)
+
+            out_df = out_df.append(info._asdict(), ignore_index=True)
+
+    # write output per file
+    with tb.open_file(out_filename, "w") as h5out:
+        df_writer(h5out, out_df.apply(pd.to_numeric), group_name="tracks", table_name="events")
+    index_tables(out_filename)
