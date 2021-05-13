@@ -1,7 +1,8 @@
 import os
 import glob
 import subprocess
-import numpy as np
+import numpy  as np
+import pandas as pd
 
 from time import sleep
 
@@ -21,58 +22,33 @@ def rewrite_config_lines(splited, REGION, NEVENTS):
     return splited
 
 
-queue_state_command = "squeue |grep usciegdl |wc -l"
+bunch = 200
+queue_state_command = "squeue -r |grep usciegdl |wc -l"
 joblaunch_command   = "sbatch --array={nl}-{nu} {jobfilename}"
-queue_limit = 1
+queue_limit = 190
 
 event_type = "214Bi"
-jobfilename = os.path.expandvars(f"$HOME/NEXT/NEXT100-0nubb-analysis/nexus_job_templates/NEXT100_{event_type}.sh")
+jobfilename    = os.path.expandvars(f"$PWD/NEXT100_{event_type}.sh")
+tablesfilename = os.path.expandvars(f"$PWD/../fitting_utils/Efficiency_table.ods")
 
-# time factor
-f = 3600*24*30*6
-if (event_type == "214Bi"):
-    REGIONS = {"TP_COPPER_PLATE"  : int(f*1.99e-4),
-               "SIPM_BOARD"       : int(f*8.10e-3),
-               "EP_COPPER_PLATE"  : int(f*6.45e-4),
-               "SAPPHIRE_WINDOW"  : int(f*2.51e-3),
-               "OPTICAL_PAD"      : int(f*2.82e-3),
-               "INTERNAL_PMT_BASE": int(f*4.20e-2),
-               "LIGHT_TUBE"       : int(f*1.09e-2)
-               }
-
-elif (event_type == "208Tl"):
-    REGIONS = {"TP_COPPER_PLATE"  : int(f*6.81e-5),
-               "SIPM_BOARD"       : int(f*1.30e-3),
-               "EP_COPPER_PLATE"  : int(f*2.20e-4),
-               "SAPPHIRE_WINDOW"  : int(f*3.56e-4),
-               "OPTICAL_PAD"      : int(f*8.31e-4),
-               "INTERNAL_PMT_BASE": int(f*5.35e-2),
-               "LIGHT_TUBE"       : int(f*1.51e-3)
-               }
-
-elif (event_type == "2nubb"):
-    y   = 365*24*3600 # year to seconds
-    T12 = 2.34e21*y # kam-land
-    A   = np.log(2) * 100./136. * 1e27 * (1/T12)
-    REGIONS = {"ACTIVE": int(f*A)}
-
+if (event_type == "214Bi") or (event_type == "208Tl"):
+    table = pd.read_excel(tablesfilename, sheet_name=event_type)
 else:
-    REGIONS = {"NO_REGION": 300}
+    raise Exception("Unknow event type")
 
-
-njobs = 250
-bunch = 200
 if __name__ == "__main__":
 
     # ITERATE IN REGIONS and LAUNCH JOBS
-    for REGION in REGIONS:
+    for region, df in table.groupby("Region"):
+        nevents = int(df["Simulation events"])
+        njobs   = int(df["Jobs"])
         with open(jobfilename, "r") as jobfile:
             splited = jobfile.read().splitlines()
-            splited = rewrite_config_lines(splited, REGION, REGIONS[REGION])
+            splited = rewrite_config_lines(splited, region, nevents)
         with open(jobfilename + ".temp", "w") as temp:
             temp.write("\n".join(splited))
 
-        print(f"Launching region {REGION} with {REGIONS[REGION]/f*1e3} mBq")
+        print(f"Launching region {region} with {nevents} events per job")
         print("-----------------------------------------------------------")
         ns = np.clip(np.arange(0, njobs + bunch, bunch), 0, njobs)
         for i, n in enumerate(ns[:-1]):
