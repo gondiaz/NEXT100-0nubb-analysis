@@ -1,3 +1,5 @@
+fitting_utils/*.ods#
+
 *.DS_Store
 
 *.h5
