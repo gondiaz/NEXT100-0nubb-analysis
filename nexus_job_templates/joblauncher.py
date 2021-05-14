@@ -22,12 +22,12 @@ def rewrite_config_lines(splited, REGION, NEVENTS):
     return splited
 
 
-bunch = 200
+bunch = 100
 queue_state_command = "squeue -r |grep usciegdl |wc -l"
 joblaunch_command   = "sbatch --array={nl}-{nu} {jobfilename}"
 queue_limit = 190
 
-event_type = "214Bi"
+event_type = "208Tl"
 jobfilename    = os.path.expandvars(f"$PWD/NEXT100_{event_type}.sh")
 tablesfilename = os.path.expandvars(f"$PWD/../fitting_utils/Efficiency_table.ods")
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         print("-----------------------------------------------------------")
         ns = np.clip(np.arange(0, njobs + bunch, bunch), 0, njobs)
         for i, n in enumerate(ns[:-1]):
-            check_jobs(queue_state_command, nmin=queue_limit)
+            check_jobs(queue_state_command, nmin=queue_limit-(ns[i+1]+1-n))
             #### launch job ####
             cmd = joblaunch_command.format(nl=n, nu=ns[i+1]-1, jobfilename=jobfilename + ".temp")
             print(cmd)
