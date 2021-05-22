@@ -40,15 +40,16 @@ echo "/PhysicsList/RegisterPhysics G4StepLimiterPhysics"        >> ${INI_MACRO}
 echo "/PhysicsList/RegisterPhysics G4OpticalPhysics"            >> ${INI_MACRO}
 
 # geometry and generator
-echo "/Geometry/RegisterGeometry   NEXT100_OPT"                 >> ${INI_MACRO}
-echo "/Generator/RegisterGenerator Kr83m"                       >> ${INI_MACRO}
+echo "/nexus/RegisterGeometry Next100OpticalGeometry"           >> ${INI_MACRO}
+echo "/nexus/RegisterGenerator Kr83mGenerator"                  >> ${INI_MACRO}
 
 # actions
-echo "/Actions/RegisterRunAction      DEFAULT"                  >> ${INI_MACRO}
-echo "/Actions/RegisterEventAction    DEFAULT"                  >> ${INI_MACRO}
-echo "/Actions/RegisterTrackingAction DEFAULT"                  >> ${INI_MACRO}
+echo "/nexus/RegisterRunAction DefaultRunAction"                >> ${INI_MACRO}
+echo "/nexus/RegisterEventAction DefaultEventAction"            >> ${INI_MACRO}
+echo "/nexus/RegisterTrackingAction DefaultTrackingAction"      >> ${INI_MACRO}
 
 # persistency
+echo "/nexus/RegisterPersistencyManager PersistencyManager"     >> ${INI_MACRO}
 echo "/nexus/RegisterMacro ${CFG_MACRO}"                        >> ${INI_MACRO}
 
 
