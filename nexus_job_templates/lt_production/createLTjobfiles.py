@@ -35,7 +35,7 @@ while zidx<len(z):
     print("Creating jobs in:", jobdir)
     os.makedirs(jobdir, exist_ok=True)
 
-    for i, pos in enumerate(zip(x, y)):
+    for i, pos in enumerate(zip(x, y), 1):
         x_, y_ = pos
         filename = os.path.join(jobdir, f"nexus_x_{x_}_y_{y_}_z_{z_}_LT.sh")
         with open(filename, "w") as file:
