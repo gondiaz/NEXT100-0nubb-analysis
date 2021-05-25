@@ -8,7 +8,7 @@ jobsdir   = os.path.expandvars("$LUSTRE/NEXUS/LT_generation/NEXT100/-5.5/jobs/")
 filenames = glob.glob(jobsdir + "*.sh")
 
 
-queue_state_command = "squeue |grep usciegdl |wc -l"
+queue_state_command = "squeue -r |grep usciegdl |wc -l"
 joblaunch_command   = "sbatch {filename}"
 queue_limit = 99
 

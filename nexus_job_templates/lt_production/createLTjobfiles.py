@@ -37,7 +37,7 @@ while zidx<len(z):
 
     for i, pos in enumerate(zip(x, y)):
         x_, y_ = pos
-        filename = os.path.join(jobdir, f"nexus_x_{x_}_y_{y_}_z_{z_}_next100LT.sh")
+        filename = os.path.join(jobdir, f"nexus_x_{x_}_y_{y_}_z_{z_}_LT.sh")
         with open(filename, "w") as file:
             file.write(Template.format(RNDSEED=zidx + i, X=x_, Y=y_, Z=z_))
     zidx +=1
