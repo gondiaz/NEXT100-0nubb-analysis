@@ -69,12 +69,12 @@ echo "/Geometry/PmtR11410/time_binning 25. nanosecond"             >> ${CFG_MACR
 echo "/Geometry/Next100/sipm_time_binning 1. microsecond"          >> ${CFG_MACRO}
 
 echo "/Geometry/Next100/max_step_size     1. mm"                   >> ${CFG_MACRO}
-echo "/Geometry/Next100/pressure          10.2 bar"                >> ${CFG_MACRO}
+echo "/Geometry/Next100/pressure          10.0 bar"                >> ${CFG_MACRO}
 echo "/Geometry/Next100/sc_yield          25510. 1/MeV"            >> ${CFG_MACRO}
 echo "/Geometry/Next100/drift_transv_diff 1.2 mm/sqrt(cm)"         >> ${CFG_MACRO}
 echo "/Geometry/Next100/drift_long_diff   0.3 mm/sqrt(cm)"         >> ${CFG_MACRO}
 echo "/Geometry/Next100/e_lifetime        12. ms"                  >> ${CFG_MACRO}
-echo "/Geometry/Next100/EL_field          12.8 kilovolt/cm"        >> ${CFG_MACRO}
+echo "/Geometry/Next100/EL_field          14. kilovolt/cm"         >> ${CFG_MACRO}
 echo "/Geometry/Next100/elfield                        ${FULLSIM}" >> ${CFG_MACRO}
 
 # physics

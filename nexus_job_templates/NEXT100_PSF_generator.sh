@@ -69,11 +69,27 @@ echo "/Generator/ScintGenerator/nphotons ${NPHOTONS}"           >> ${CFG_MACRO}
 # echo "/Geometry/PmtR11410/time_binning 25. nanosecond"             >> ${CFG_MACRO}
 # echo "/Geometry/Next100/sipm_time_binning 1. microsecond"          >> ${CFG_MACRO}
 
+echo "/Geometry/Next100/max_step_size     1. mm"                   >> ${CFG_MACRO}
+echo "/Geometry/Next100/pressure          10.0 bar"                >> ${CFG_MACRO}
+echo "/Geometry/Next100/sc_yield          25510. 1/MeV"            >> ${CFG_MACRO}
+echo "/Geometry/Next100/drift_transv_diff 1.2 mm/sqrt(cm)"         >> ${CFG_MACRO}
+echo "/Geometry/Next100/drift_long_diff   0.3 mm/sqrt(cm)"         >> ${CFG_MACRO}
+echo "/Geometry/Next100/e_lifetime        12. ms"                  >> ${CFG_MACRO}
+echo "/Geometry/Next100/EL_field          14. kilovolt/cm"         >> ${CFG_MACRO}
+echo "/Geometry/Next100/elfield                        ${FULLSIM}" >> ${CFG_MACRO}
+
 echo "/Geometry/Next100/el_gap_gen_disk_diam  20.0  mm" >> ${CFG_MACRO}
 echo "/Geometry/Next100/el_gap_gen_disk_x     7.775 mm" >> ${CFG_MACRO}
 echo "/Geometry/Next100/el_gap_gen_disk_y     7.775 mm" >> ${CFG_MACRO}
 echo "/Geometry/Next100/el_gap_gen_disk_zmin  0.0"    >> ${CFG_MACRO} #relative zmin
 echo "/Geometry/Next100/el_gap_gen_disk_zmax  1.0"    >> ${CFG_MACRO} #relative zmax
+
+# physics
+echo "/PhysicsList/Nexus/clustering                    ${FULLSIM}" >> ${CFG_MACRO}
+echo "/PhysicsList/Nexus/drift                         ${FULLSIM}" >> ${CFG_MACRO}
+echo "/PhysicsList/Nexus/electroluminescence           ${FULLSIM}" >> ${CFG_MACRO}
+echo "/process/optical/processActivation Cerenkov      ${FULLSIM}" >> ${CFG_MACRO}
+echo "/process/optical/processActivation Scintillation ${FULLSIM}" >> ${CFG_MACRO}
 
 # persistency
 echo "/nexus/random_seed            ${RNDSEED}" >> ${CFG_MACRO}
