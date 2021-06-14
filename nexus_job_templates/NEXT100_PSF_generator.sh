@@ -66,8 +66,8 @@ echo "/Generator/ScintGenerator/region EL_GAP"                  >> ${CFG_MACRO}
 echo "/Generator/ScintGenerator/nphotons ${NPHOTONS}"           >> ${CFG_MACRO}
 
 # geometry
-# echo "/Geometry/PmtR11410/time_binning 1. nanosecond"           >> ${CFG_MACRO}
-# echo "/Geometry/SiPMSensl/time_binning 1. microsecond"          >> ${CFG_MACRO}
+# echo "/Geometry/PmtR11410/time_binning 25. nanosecond"             >> ${CFG_MACRO}
+# echo "/Geometry/Next100/sipm_time_binning 1. microsecond"          >> ${CFG_MACRO}
 
 echo "/Geometry/Next100/el_gap_gen_disk_diam  20.0  mm" >> ${CFG_MACRO}
 echo "/Geometry/Next100/el_gap_gen_disk_x     7.775 mm" >> ${CFG_MACRO}

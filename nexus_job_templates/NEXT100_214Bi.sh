@@ -73,8 +73,8 @@ echo "/Actions/DefaultEventAction/energy_threshold 2.0 MeV"     >> ${CFG_MACRO}
 echo "/Actions/DefaultEventAction/max_energy       3.0 MeV"     >> ${CFG_MACRO}
 
 # geometry
-# echo "/Geometry/PmtR11410/time_binning 1. nanosecond"           >> ${CFG_MACRO}
-# echo "/Geometry/SiPMSensl/time_binning 1. microsecond"          >> ${CFG_MACRO}
+echo "/Geometry/PmtR11410/time_binning 25. nanosecond"             >> ${CFG_MACRO}
+echo "/Geometry/Next100/sipm_time_binning 1. microsecond"          >> ${CFG_MACRO}
 
 echo "/Geometry/Next100/max_step_size     1. mm"                   >> ${CFG_MACRO}
 echo "/Geometry/Next100/pressure          10.2 bar"                >> ${CFG_MACRO}
