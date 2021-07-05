@@ -64,3 +64,18 @@ def generate_background_experiment(time, table_filename, background_path_structu
             pdata.append(dst)
 
     return pd.concat(pdata)
+
+
+def create_unique_event_number(df, /, index_name="pevent"):
+
+    df = df.set_index(["event", "background", "region"])
+
+    index = df.index
+    counts = index.value_counts()
+
+    ids = np.arange(index.nunique())
+    ids = np.repeat(ids, counts)
+
+    df.loc[counts.index, index_name] = ids
+
+    return df.reset_index()
