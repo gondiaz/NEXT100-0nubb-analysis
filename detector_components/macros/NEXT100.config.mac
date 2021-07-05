@@ -30,8 +30,6 @@
 /PhysicsList/Nexus/clustering                    false
 /PhysicsList/Nexus/drift                         false
 /PhysicsList/Nexus/electroluminescence           false
-/process/optical/processActivation Cerenkov      false
-/process/optical/processActivation Scintillation false
 
 /nexus/random_seed 1
 /nexus/persistency/start_id 0
