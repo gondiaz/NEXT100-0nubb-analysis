@@ -1,0 +1,141 @@
+# CREATE SCENE
+/vis/open OGL
+
+# Setting drawing style to "wireframe" / "surface"
+/vis/viewer/set/style surface
+
+# View
+/vis/viewer/set/viewpointThetaPhi # (isometric view)
+#/vis/viewer/set/viewpointThetaPhi 90 0
+
+/vis/drawVolume
+/vis/viewer/set/background 0 0 0
+#/vis/scene/add/axes 0 0 0
+#/vis/viewer/zoomTo 1
+#/vis/viewer/centreOn ACTIVE
+#/vis/viewer/set/auxiliaryEdge true
+
+# list volumes
+#/vis/geometry/list
+
+# visibilities
+# outside detector
+/vis/geometry/set/visibility LAB                      0 false
+/vis/geometry/set/visibility LEAD_BOX                 0 false
+/vis/geometry/set/visibility STEEL_BEAM_ROOF          0 false
+/vis/geometry/set/visibility STEEL_BEAM_STRUCTURE_LAT 0 false
+/vis/geometry/set/visibility STEEL_BEAM_STRUCTURE_TOP 0 false
+/vis/geometry/set/visibility STEEL_BOX                0 false
+/vis/geometry/set/visibility INNER_AIR                0 false
+# detector components
+/vis/geometry/set/visibility VESSEL                   0 true
+/vis/geometry/set/visibility VESSEL_GAS               0 false
+/vis/geometry/set/visibility VACUUM_MANIFOLD          0 false
+/vis/geometry/set/visibility VACUUM_MANIFOLD_GAS      0 false
+/vis/geometry/set/visibility ACTIVE                   0 false
+/vis/geometry/set/visibility CATHODE_GRID             0 true
+/vis/geometry/set/visibility BUFFER                   0 false
+/vis/geometry/set/visibility EL_GAP                   0 false
+/vis/geometry/set/visibility EL_GRID                  0 false
+/vis/geometry/set/visibility LIGHT_TUBE_DRIFT         0 false
+/vis/geometry/set/visibility DRIFT_TPB                0 false
+/vis/geometry/set/visibility LIGHT_TUBE_BUFFER        0 false
+/vis/geometry/set/visibility BUFFER_TPB               0 false
+# energy plane
+/vis/geometry/set/visibility EP_COPPER_PLATE          0 true
+/vis/geometry/set/visibility HOLE                     0 false
+/vis/geometry/set/visibility SAPPHIRE_WINDOW          0 true
+/vis/geometry/set/visibility SAPPHIRE_WNDW_TPB        0 false
+/vis/geometry/set/visibility OPTICAL_PAD              0 true
+/vis/geometry/set/visibility PMT_R11410               0 true
+/vis/geometry/set/visibility PMT_GAS                  0 true
+/vis/geometry/set/visibility PMT_WINDOW               0 true
+/vis/geometry/set/visibility PMT_PHOTOCATHODE         0 true
+/vis/geometry/set/visibility INTERNAL_PMT_BASE        0 true
+# tracking plane
+/vis/geometry/set/visibility TP_COPPER_PLATE          0 true
+/vis/geometry/set/visibility SIPM_BOARD               0 true
+/vis/geometry/set/visibility SIPM_BOARD_MASK          0 true
+/vis/geometry/set/visibility SIPM_BOARD_MASK_WLS      0 false
+/vis/geometry/set/visibility SIPM_BOARD_MASK_WLS_HOLE 0 false
+/vis/geometry/set/visibility SIPM_BOARD_MASK_HOLE     0 true
+/vis/geometry/set/visibility SiPM_CASE                0 true
+/vis/geometry/set/visibility SiPM_WINDOW              0 true
+/vis/geometry/set/visibility SiPM_SENSAREA            0 true
+/vis/geometry/set/visibility SiPM_WLS                 0 true
+/vis/geometry/set/visibility ICS                      0 false
+/vis/geometry/set/visibility DB_PLUG                  0 true
+/vis/geometry/set/visibility WORLD                    0 false
+
+# wireframes
+#/vis/geometry/set/forceWireframe VESSEL 0 true
+
+# colors
+# outside detector
+/vis/geometry/set/colour LAB                      0 1 1 1 0.1
+/vis/geometry/set/colour LEAD_BOX                 0 1 1 1 0.1
+/vis/geometry/set/colour STEEL_BEAM_ROOF          0 1 1 1 0.1
+/vis/geometry/set/colour STEEL_BEAM_STRUCTURE_LAT 0 1 1 1 0.1
+/vis/geometry/set/colour STEEL_BEAM_STRUCTURE_TOP 0 1 1 1 0.1
+/vis/geometry/set/colour STEEL_BOX                0 1 1 1 0.1
+/vis/geometry/set/colour INNER_AIR                0 1 1 1 0.1
+# detector components
+/vis/geometry/set/colour VESSEL                   0 1 1 1 0.1
+/vis/geometry/set/colour VESSEL_GAS               0 1 1 1 0.1
+/vis/geometry/set/colour VACUUM_MANIFOLD          0 1 1 1 1
+/vis/geometry/set/colour VACUUM_MANIFOLD_GAS      0 1 1 1 0.1
+/vis/geometry/set/colour ACTIVE                   0 1 1 1 0.1
+/vis/geometry/set/colour CATHODE_GRID             0 1 1 1 0.1
+/vis/geometry/set/colour BUFFER                   0 1 1 1 0.1
+/vis/geometry/set/colour EL_GAP                   0 1 0 0 1
+/vis/geometry/set/colour EL_GRID                  0 1 1 1 0.1
+/vis/geometry/set/colour LIGHT_TUBE_DRIFT         0 0.4 1 0.4 1
+/vis/geometry/set/colour DRIFT_TPB                0 1 1 1 0.1
+/vis/geometry/set/colour LIGHT_TUBE_BUFFER        0 0.4 0.7 1 1
+/vis/geometry/set/colour BUFFER_TPB               0 1 1 1 0.1
+# energy plane
+/vis/geometry/set/colour EP_COPPER_PLATE          0 0.72 0.45 0.2 0.3
+/vis/geometry/set/colour HOLE                     0 1 1 1 0.1
+/vis/geometry/set/colour SAPPHIRE_WINDOW          0 1 1 0 1
+/vis/geometry/set/colour SAPPHIRE_WNDW_TPB        0 1 1 1 0.1
+/vis/geometry/set/colour OPTICAL_PAD              0 1 1 1 0.1
+/vis/geometry/set/colour PMT_R11410               0 1 1 1 1
+/vis/geometry/set/colour PMT_GAS                  0 1 1 1 0.1
+/vis/geometry/set/colour PMT_WINDOW               0 1 1 1 0.1
+/vis/geometry/set/colour PMT_PHOTOCATHODE         0 1 1 1 0.1
+/vis/geometry/set/colour INTERNAL_PMT_BASE        0 1 1 1 0.1
+# tracking plane
+/vis/geometry/set/colour TP_COPPER_PLATE          0 0.72 0.45 0.2 0.3
+/vis/geometry/set/colour SIPM_BOARD               0 1 0.6 0.2 0.1
+/vis/geometry/set/colour SIPM_BOARD_MASK          0 1 1 1 0.1
+/vis/geometry/set/colour SIPM_BOARD_MASK_WLS      0 1 1 1 0.1
+/vis/geometry/set/colour SIPM_BOARD_MASK_WLS_HOLE 0 1 1 1 0.1
+/vis/geometry/set/colour SIPM_BOARD_MASK_HOLE     0 1 1 1 0.1
+/vis/geometry/set/colour SiPM_CASE                0 1 1 1 0.1
+/vis/geometry/set/colour SiPM_WINDOW              0 1 1 1 0.1
+/vis/geometry/set/colour SiPM_SENSAREA            0 1 1 1 0.1
+/vis/geometry/set/colour SiPM_WLS                 0 1 1 1 0.1
+# other
+/vis/geometry/set/colour ICS                      0 0.72 0.45 0.2 0.2
+/vis/geometry/set/colour DB_PLUG                  0 1 1 1 0.1
+/vis/geometry/set/colour WORLD                    0 1 1 1 0.1
+
+
+
+/vis/geometry/set/forceWireframe TP_COPPER_PLATE
+/vis/geometry/set/forceWireframe EP_COPPER_PLATE
+
+#/vis/geometry/set/forceSolid ACTIVE
+#/vis/geometry/set/forceSolid BUFFER
+
+#/vis/geometry/set/lineWidth CATHODE_GRID 0 3
+
+#xe_sphere
+#/vis/geometry/set/forceSolid XE_SPHERE
+#/vis/geometry/set/colour XE_SPHERE 0 1 0 0 1
+
+# Trajectories
+/tracking/storeTrajectory 2
+/vis/scene/add/trajectories smooth
+/vis/scene/notifyHandlers
+/vis/scene/endOfEventAction accumulate

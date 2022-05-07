@@ -1,3 +1,16 @@
+*.ods#
+
+*.DS_Store
+
+*.h5
+
+nexus_job_templates/local_test_utility/*.mac
+nexus_job_templates/local_test_utility/macros_from_jobs.py
+
+nexus_job_templates/demopp_kr.sh
+nexus_job_templates/demopp_tlde.sh
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
