@@ -17,7 +17,7 @@ job_header = os.linesep.join(( "#!/bin/bash"
                              , "#SBATCH --output   {output}"
                              , "#SBATCH --error    {error}"
                              , "#SBATCH --ntasks   {tasks_per_job}"
-                             , "#SBATCH --time      10:00:00"
+                             , "#SBATCH --time      06:00:00"    # short partition
                              , "#SBATCH --cpus-per-task 1"
                              , "#SBATCH --mem-per-cpu 3G"
                              , os.linesep))

@@ -7,13 +7,13 @@ from math import ceil
 # assumes activity in mBq
 year = (3600. * 24. * 365)/1000.
 
-background = "208Tl"
+background = "214Bi"
 exposure = 40. * year
 min_total_events = 100
 min_sim_per_file = 1e6
 max_sim_per_file = 1e7
 min_events_per_file = 10
-max_events_per_file = 100
+max_events_per_file = 50
 
 template_filename = os.path.expandvars(f"$PWD/NEXT100_{background}.sh")
 outjob_dir        = os.path.expandvars("$LUSTRE/NEXT100/{background}/tasks/")
@@ -26,11 +26,18 @@ table.loc[:,           "total"] = (table.TotalActivity*table.MCEfficiency*exposu
 table.loc[:,           "total"] = np.maximum(table.total, min_total_events)
 table.loc[:,       "total_sim"] = table.total/table.MCEfficiency
 table.loc[:,    "sim_per_file"] = min_sim_per_file
+
+if background == "214Bi":
+    table.loc[       "PMT_BASE", "sim_per_file"] = 4e5
+    table.loc["EP_COPPER_PLATE", "sim_per_file"] = 9e5
+
 table.loc[:, "events_per_file"] = np.minimum(table.sim_per_file*table.MCEfficiency, max_events_per_file)
 table.loc[:, "events_per_file"] = np.maximum(table.events_per_file, min_events_per_file)
+
 if background == "208Tl":
     table.loc["FIELD_RING", "events_per_file"] = 200
     table.loc[       "ICS", "events_per_file"] = 250
+
 table.loc[:, "sim_per_file"]    = (table.events_per_file/table.MCEfficiency).apply(np.ceil).astype(int)
 table.loc[:, "sim_per_file"]    = np.minimum(table.sim_per_file, max_sim_per_file)
 table.loc[:, "events_per_file"] = (table.sim_per_file*table.MCEfficiency).apply(np.ceil).astype(int)

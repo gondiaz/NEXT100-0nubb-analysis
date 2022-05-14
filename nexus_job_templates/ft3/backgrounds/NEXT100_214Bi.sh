@@ -9,7 +9,7 @@ VOLUME={VOLUME}
 NODEOUTDIR="$LUSTRE_SCRATCH/$RNDSEED/$VOLUME/"
 OUTDIR="$LUSTRE/NEXT100/214Bi/$VOLUME/nexus/"
 
-OUTFILE="$NODEOUTDIR/nexus_$((RNDSEED))_214Bi"
+OUTFILE="$OUTDIR/nexus_$((RNDSEED))_214Bi"
 
 mkdir -p $NODEOUTDIR $OUTDIR
 
@@ -89,7 +89,6 @@ start=`date +%s`
 source $STORE/NEXUS/loadmodules.sh
 
 $STORE/NEXUS/nexus/bin/nexus -b -n $NEVENTS $INI_MACRO
-cp "$OUTFILE.h5" $OUTDIR
 
 end=`date +%s`
 let deltatime=end-start
