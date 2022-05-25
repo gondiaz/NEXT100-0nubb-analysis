@@ -56,8 +56,8 @@ echo "/Generator/IonGenerator/mass_number   208"         >> $CFG_MACRO
 echo "/Generator/IonGenerator/region        PORT_1a"     >> $CFG_MACRO
 
 # actions
-echo "/Actions/DefaultEventAction/energy_threshold 1.45 MeV"  >> $CFG_MACRO
-echo "/Actions/DefaultEventAction/max_energy       1.75 MeV"  >> $CFG_MACRO
+echo "/Actions/DefaultEventAction/min_energy 1.45 MeV"   >> $CFG_MACRO
+echo "/Actions/DefaultEventAction/max_energy 1.75 MeV"   >> $CFG_MACRO
 
 # geometry
 echo "/Geometry/Next100/max_step_size  1.  mm"        >> $CFG_MACRO

@@ -57,7 +57,7 @@ echo "/Generator/Decay0Interface/Ba136FinalState 0"      >> $CFG_MACRO
 echo "/Generator/Decay0Interface/region          ACTIVE" >> $CFG_MACRO
 
 # actions
-echo "/Actions/DefaultEventAction/energy_threshold 2.0 MeV"  >> $CFG_MACRO
+echo "/Actions/DefaultEventAction/min_energy 2.0 MeV"  >> $CFG_MACRO
 
 # geometry
 echo "/Geometry/Next100/max_step_size  1.  mm"        >> $CFG_MACRO

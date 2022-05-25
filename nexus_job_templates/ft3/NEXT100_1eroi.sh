@@ -57,7 +57,7 @@ echo "/Generator/SingleParticle/max_energy 2.55 MeV"  >> $CFG_MACRO
 echo "/Generator/SingleParticle/region     ACTIVE"    >> $CFG_MACRO
 
 # actions
-echo "/Actions/DefaultEventAction/energy_threshold 2.40 MeV"  >> $CFG_MACRO
+echo "/Actions/DefaultEventAction/min_energy 2.40 MeV"  >> $CFG_MACRO
 
 # geometry
 echo "/Geometry/Next100/max_step_size  1.  mm"        >> $CFG_MACRO
