@@ -1,22 +1,16 @@
-"""
-Assumes tasks are created at /path/tasks/ with filenames tasks_
-"""
-
 import os
 import re
 import glob
-from math import ceil
+import numpy as np
 
 job_basename  = "fits"
-nexperiments  = 60 # experiments per job
-njobs         = 10
+nexperiments  = 30 # experiments per job
+njobs         = 30
 tasks_per_job = 10
-T12_0nubb     = 1e+25
-out_filename  = os.path.expandvars("$PWD/outs/result_{file_number}.csv")
-jobs_dir      = os.path.expandvars("$PWD/jobs")
-logs_dir      = os.path.expandvars("$LUSTRE/logs/")
-os.makedirs(jobs_dir, exist_ok=True)
-os.makedirs(os.path.dirname(out_filename), exist_ok=True)
+T12_0nubb     = np.arange(1, 25, 0.5)*1e+25
+out_filename  = os.path.expandvars("$LUSTRE/fits/{t12}/outs/result_{file_number}.csv")
+jobs_dir      = os.path.expandvars("$LUSTRE/fits/{t12}/jobs/")
+logs_dir      = os.path.expandvars("$LUSTRE/logs/{t12}/")
 
 job_header = os.linesep.join(( "#!/bin/bash"
                              , "#SBATCH --job-name {jobname}"
@@ -45,28 +39,35 @@ printf 'Time spent: %d:%02d:%02d\\n' $hours $minutes $seconds
 
 if __name__ == "__main__":
 
-    print(f"Creating {job_basename} jobs..")
 
-    # write jobs
-    for j in range(0, njobs):
+    for t12 in T12_0nubb:
+        t12 = np.format_float_scientific(t12, 2, unique=False)
 
-        # write job-header
-        job = job_header.format( jobname= str(j) + "_" + job_basename
-                               , output = os.path.join(logs_dir, str(j)+".out")
-                               , error  = os.path.join(logs_dir, str(j)+".err")
-                               , tasks_per_job = tasks_per_job)
-        # write tasks
-        for task in range(j*tasks_per_job, (j+1)*tasks_per_job):
-            outfile = out_filename.format(file_number=task)
-            task = f"python experiment_and_fit.py -n {nexperiments} -o {outfile} -T12 {T12_0nubb}"
-            job += job_task.format(task=task)
+        os.makedirs(                     jobs_dir.format(t12=t12), exist_ok=True)
+        os.makedirs(os.path.dirname(out_filename).format(t12=t12), exist_ok=True)
 
-        # write end
-        job += job_end
+        print(f"Creating {job_basename} jobs for T12={t12} years..")
 
-        # write to file
-        filename = os.path.join(jobs_dir, f"job_{j}.sh")
-        with open(filename, "x") as outfile:
-            outfile.write(job)
+        # write jobs
+        for j in range(0, njobs):
 
-    print(f"{njobs} jobs created")
+            # write job-header
+            job = job_header.format( jobname= str(j) + "_" + job_basename
+                                   , output = os.path.join(logs_dir.format(t12=t12), str(j)+".out")
+                                   , error  = os.path.join(logs_dir.format(t12=t12), str(j)+".err")
+                                   , tasks_per_job = tasks_per_job)
+            # write tasks
+            for task in range(j*tasks_per_job, (j+1)*tasks_per_job):
+                outfile = out_filename.format(t12=t12, file_number=task)
+                task = f"python experiment_and_fit.py -n {nexperiments} -o {outfile} -T12 {t12}"
+                job += job_task.format(task=task)
+
+            # write end
+            job += job_end
+
+            # write to file
+            filename = os.path.join(jobs_dir.format(t12=t12), f"job_{j}.sh")
+            with open(filename, "x") as outfile:
+                outfile.write(job)
+
+        print(f"{njobs} jobs created")
