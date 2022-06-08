@@ -43,8 +43,9 @@ if __name__ == "__main__":
     for t12 in T12_0nubb:
         t12 = np.format_float_scientific(t12, 2, unique=False)
 
-        os.makedirs(                     jobs_dir.format(t12=t12), exist_ok=True)
         os.makedirs(os.path.dirname(out_filename).format(t12=t12), exist_ok=True)
+        os.makedirs(                     jobs_dir.format(t12=t12), exist_ok=True)
+        os.makedirs(                     logs_dir.format(t12=t12), exist_ok=True)
 
         print(f"Creating {job_basename} jobs for T12={t12} years..")
 
