@@ -7,7 +7,8 @@ job_basename  = "fits"
 nexperiments  = 30 # experiments per job
 njobs         = 30
 tasks_per_job = 10
-T12_0nubb     = np.arange(1, 25, 0.5)*1e+25
+T12_0nubb     = np.arange(1, 10, 0.1)*1e+25
+sel_filename  = os.path.expandvars("../create_pdfs/selected_data_typeII.h5")
 out_filename  = os.path.expandvars("$LUSTRE/fits/{t12}/outs/result_{file_number}.csv")
 jobs_dir      = os.path.expandvars("$LUSTRE/fits/{t12}/jobs/")
 logs_dir      = os.path.expandvars("$LUSTRE/logs/{t12}/")
@@ -60,7 +61,7 @@ if __name__ == "__main__":
             # write tasks
             for task in range(j*tasks_per_job, (j+1)*tasks_per_job):
                 outfile = out_filename.format(t12=t12, file_number=task)
-                task = f"python experiment_and_fit.py -n {nexperiments} -o {outfile} -T12 {t12}"
+                task = f"python experiment_and_fit.py -n {nexperiments} -s {sel_filename} -o {outfile} -T12 {t12}"
                 job += job_task.format(task=task)
 
             # write end

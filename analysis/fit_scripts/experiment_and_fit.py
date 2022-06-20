@@ -5,6 +5,7 @@ import numpy  as np
 import pandas as pd
 os.environ["ZFIT_DISABLE_TF_WARNINGS"] = "1"
 import zfit
+import hist
 
 from invisible_cities.core.system_of_units import year, kg, dalton
 from invisible_cities.evm.mixer            import get_mixer_nevents
@@ -12,11 +13,13 @@ from invisible_cities.evm.mixer            import get_mixer_nevents
 # Experiment config
 parser = argparse.ArgumentParser(description="Run experiments and fits")
 parser.add_argument(  "-n", dest="Nexperiments", type=  int, help="number of experiments"  , required=True)
+parser.add_argument(  "-s", dest="sel_filename", type=  str, help="number of experiments"  , required=True)
 parser.add_argument(  "-o", dest="out_filename", type=  str, help="output filename"        , required=True)
 parser.add_argument("-T12", dest=   "T12_0nubb", type=float, help="0nubb half-life (years)", required=True)
 args = parser.parse_args()
 
 Nexperiments = args.Nexperiments
+sel_filename = os.path.expandvars(args.sel_filename)
 out_filename = os.path.expandvars(args.out_filename)
 T12_0nubb    = args.T12_0nubb * year
 
@@ -26,48 +29,52 @@ exposure   = 4. * year
 detector_db = "next100"
 isotopes = ["208Tl", "214Bi", "0nubb"]
 
-
 # PDFs
-energy_obs_ext = zfit.Space("energy", limits=(2.40, 2.50))
-energy_obs     = zfit.Space("energy", limits=(2.42, 2.49))
-eblob2_obs     = zfit.Space("eblob2", limits=(0.00, 1.20))
+def create_pdf_from_histogram(bins, histo, obs, name):
+    h    = hist.Hist(hist.axis.Variable(edges=bins, name=name), data=histo)
+    pdf  = zfit.pdf.HistogramPDF(h)
+    data = zfit.Data.from_numpy (obs=obs, array=binc, weights=h)
+    pdf  = zfit.pdf.KDE1DimExact(obs=obs, data=data, bandwidth=np.mean(np.diff(bins)))
+    return pdf
 
-with tb.open_file("../selected_data.h5") as h5file:
-
+with tb.open_file(sel_filename) as h5file:
     # energy pdfs
-    energy = h5file.root.bb0nu.energy.read()
-    data   = zfit.Data.from_numpy (obs=energy_obs_ext, array=energy)
-    pdf_energy_0nubb = zfit.pdf.KDE1DimExact(obs=energy_obs, data=data, bandwidth="adaptive_zfit")
+    name = "energy"
+    bins = h5file.root.energy.bins.read()
+    binc = (bins[1:] + bins[:-1])/2.
+    emin, emax = bins[0], bins[-1]
+    energy_obs = zfit.Space(name, limits=(emin, emax))
 
-    energy = h5file.root.Tl208.energy.read()
-    data   = zfit.Data.from_numpy (obs=energy_obs_ext, array=energy)
-    pdf_energy_208Tl = zfit.pdf.KDE1DimExact(obs=energy_obs, data=data, bandwidth="adaptive_zfit")
+    h = h5file.root.energy.bb0nu.read()
+    pdf_energy_bb = create_pdf_from_histogram(bins, h, energy_obs, name)
+    h = h5file.root.energy.Bi.read()
+    pdf_energy_Bi = create_pdf_from_histogram(bins, h, energy_obs, name)
+    h = h5file.root.energy.Tl.read()
+    pdf_energy_Tl = create_pdf_from_histogram(bins, h, energy_obs, name)
 
-    energy = h5file.root.Bi214.energy.read()
-    data   = zfit.Data.from_numpy (obs=energy_obs_ext, array=energy)
-    pdf_energy_214Bi = zfit.pdf.KDE1DimExact(obs=energy_obs, data=data, bandwidth="adaptive_zfit")
+    # eblob2
+    name = "eblob2"
+    bins = h5file.root.eblob2.bins.read()
+    binc = (bins[1:] + bins[:-1])/2.
+    eb2min, eb2max = bins[0], bins[-1]
+    eblob2_obs     = zfit.Space(name, limits=(eb2min, eb2max))
 
-    # eblob2 pdfs
-    eblob2 = h5file.root.bb0nu.eblob2.read()
-    data   = zfit.Data.from_numpy (obs=eblob2_obs, array=eblob2)
-    pdf_eblob2_0nubb = zfit.pdf.KDE1DimExact(obs=eblob2_obs, data=data, bandwidth="adaptive_zfit")
+    h = h5file.root.eblob2.bb0nu.read()
+    pdf_eblob2_bb = create_pdf_from_histogram(bins, h, eblob2_obs, name)
+    h = h5file.root.eblob2.Bi.read()
+    pdf_eblob2_Bi = create_pdf_from_histogram(bins, h, eblob2_obs, name)
+    h = h5file.root.eblob2.Tl.read()
+    pdf_eblob2_Tl = create_pdf_from_histogram(bins, h, eblob2_obs, name)
 
-    eblob2 = h5file.root.Tl208.eblob2.read()
-    data   = zfit.Data.from_numpy (obs=eblob2_obs, array=eblob2)
-    pdf_eblob2_208Tl = zfit.pdf.KDE1DimExact(obs=eblob2_obs, data=data, bandwidth="adaptive_zfit")
 
-    eblob2 = h5file.root.Bi214.eblob2.read()
-    data   = zfit.Data.from_numpy (obs=eblob2_obs, array=eblob2)
-    pdf_eblob2_214Bi = zfit.pdf.KDE1DimExact(obs=eblob2_obs, data=data, bandwidth="adaptive_zfit")
-
-pdf_bb = zfit.pdf.ProductPDF([pdf_energy_0nubb, pdf_eblob2_0nubb])
-pdf_Tl = zfit.pdf.ProductPDF([pdf_energy_208Tl, pdf_eblob2_208Tl])
-pdf_Bi = zfit.pdf.ProductPDF([pdf_energy_214Bi, pdf_eblob2_214Bi])
+pdf_bb = zfit.pdf.ProductPDF([pdf_energy_bb, pdf_eblob2_bb])
+pdf_Tl = zfit.pdf.ProductPDF([pdf_energy_Tl, pdf_eblob2_Tl])
+pdf_Bi = zfit.pdf.ProductPDF([pdf_energy_Bi, pdf_eblob2_Bi])
 
 
 # Nevents per isotope/g4volume
-eff_ic  = pd.read_csv("../efficiencies_ic.csv")       .set_index(["Isotope", "G4Volume"])
-eff_sel = pd.read_csv("../efficiencies_selection.csv").set_index(["Isotope", "G4Volume"])
+eff_ic  = pd.read_csv("../efficiencies_ic.csv").set_index(["Isotope", "G4Volume"])
+eff_sel = pd.read_hdf(sel_filename, "efficiencies")
 total_eff = ((eff_ic.nreco/eff_ic.nsim) * (eff_sel.nevts/eff_ic.nreco)).fillna(0).loc[isotopes].sort_index()
 N0 = enrichment*(xenon_mass/(136. * dalton))
 nevent_df = get_mixer_nevents(exposure, detector_db, isotopes)
