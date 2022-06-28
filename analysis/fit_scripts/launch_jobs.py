@@ -13,7 +13,7 @@ def check_jobs(cmd, nmin=10, wait=1):
         if (j == nmin): sleep(10*wait)
 
 
-job_dir      = os.path.expandvars("$PWD/jobs/")
+job_dir      = os.path.expandvars("$LUSTRE/fits/typeI/*/jobs/")
 jobfilenames = glob.glob(os.path.join(job_dir, "job_*.sh"))
 queue_limit  = 31
 queue_state_command = "squeue -r |grep usciegdl |wc -l"

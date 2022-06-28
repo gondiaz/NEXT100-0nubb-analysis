@@ -16,16 +16,18 @@ parser.add_argument(  "-n", dest="Nexperiments", type=  int, help="number of exp
 parser.add_argument(  "-s", dest="sel_filename", type=  str, help="number of experiments"  , required=True)
 parser.add_argument(  "-o", dest="out_filename", type=  str, help="output filename"        , required=True)
 parser.add_argument("-T12", dest=   "T12_0nubb", type=float, help="0nubb half-life (years)", required=True)
+parser.add_argument(  "-t", dest=    "fit_type", type=  str, help="fit type"               , required=True)
 args = parser.parse_args()
 
 Nexperiments = args.Nexperiments
 sel_filename = os.path.expandvars(args.sel_filename)
 out_filename = os.path.expandvars(args.out_filename)
 T12_0nubb    = args.T12_0nubb * year
+fit_type     = args.fit_type
 
 enrichment = 0.9
-xenon_mass = 100. * kg
-exposure   = 4. * year
+xenon_mass = 71.5 * kg
+exposure   = 3. * year
 detector_db = "next100"
 isotopes = ["208Tl", "214Bi", "0nubb"]
 
@@ -91,12 +93,24 @@ N = int(10*nevent_df.nevts.sum())
 nbb = zfit.Parameter("nbb", 1, 0, N)
 nTl = zfit.Parameter("nTl", 1, 0, N)
 nBi = zfit.Parameter("nBi", 1, 0, N)
-pdf_bb.set_yield(nbb)
-pdf_Tl.set_yield(nTl)
-pdf_Bi.set_yield(nBi)
-model     = zfit.pdf.SumPDF(pdfs=[pdf_bb, pdf_Tl, pdf_Bi])
-minimizer = zfit.minimize.Minuit(gradient=True)
 
+# different fit strategies:
+#  - typeI  : signal cut on Eb2 and fit to energy
+#  - typeII : no cut, combined fit to energy and eblob2
+#  - typeIII: cut on background and combined energy fit for background selection with no-cut
+if fit_type == "typeI":
+    pdf_energy_bb.set_yield(nbb)
+    pdf_energy_Tl.set_yield(nTl)
+    pdf_energy_Bi.set_yield(nBi)
+    model = zfit.pdf.SumPDF(pdfs=[pdf_energy_bb, pdf_energy_Tl, pdf_energy_Bi])
+
+if fit_type == "typeII":
+    pdf_bb.set_yield(nbb)
+    pdf_Tl.set_yield(nTl)
+    pdf_Bi.set_yield(nBi)
+    model = zfit.pdf.SumPDF(pdfs=[pdf_bb, pdf_Tl, pdf_Bi])
+
+minimizer = zfit.minimize.Minuit(gradient=True)
 
 if __name__ == "__main__":
 
@@ -110,16 +124,30 @@ if __name__ == "__main__":
         nevents_roi = pd.DataFrame(index=indexes, data={"nevts": nevents})
         nevents = nevents_roi.groupby(level=0).nevts.sum()
 
-        nbbt.append(nevents.get("0nubb"))
-        nTlt.append(nevents.get("208Tl"))
-        nBit.append(nevents.get("214Bi"))
+        # sample from pdfs
+        bb_sample = pdf_bb.sample(nevents.get("0nubb")).numpy()
+        Tl_sample = pdf_Tl.sample(nevents.get("208Tl")).numpy()
+        Bi_sample = pdf_Bi.sample(nevents.get("214Bi")).numpy()
+        sample = np.concatenate([bb_sample, Tl_sample, Bi_sample])
 
-        sample = np.concatenate([ pdf_bb.sample(nevents.get("0nubb")).numpy()
-                                , pdf_Tl.sample(nevents.get("208Tl")).numpy()
-                                , pdf_Bi.sample(nevents.get("214Bi")).numpy()])
-        data = zfit.Data.from_numpy(obs=energy_obs * eblob2_obs, array=sample)
+        # fit strategies
+        if fit_type == "typeI":
+            Eb2 = 0.54
+            bb_selected_sample = bb_sample[bb_sample[:, -1]>Eb2]
+            Tl_selected_sample = Tl_sample[Tl_sample[:, -1]>Eb2]
+            Bi_selected_sample = Bi_sample[Bi_sample[:, -1]>Eb2]
+            selected_sample = np.concatenate([bb_selected_sample, Tl_selected_sample, Bi_selected_sample])
+            data = zfit.Data.from_numpy(obs=energy_obs, array=selected_sample[:, 0])
+            nbbt.append(len(bb_selected_sample))
+            nTlt.append(len(Tl_selected_sample))
+            nBit.append(len(Bi_selected_sample))
 
-        # fit
+        if fit_type == "typeII":
+            data = zfit.Data.from_numpy(obs=energy_obs * eblob2_obs, array=sample)
+            nbbt.append(nevents.get("0nubb"))
+            nTlt.append(nevents.get("208Tl"))
+            nBit.append(nevents.get("214Bi"))
+
         nll = zfit.loss.ExtendedUnbinnedNLL(model, data)
         result = minimizer.minimize(nll)
         result.hesse()
@@ -140,11 +168,11 @@ if __name__ == "__main__":
     df["nbbt"] = nbbt
     df["nTlt"] = nTlt
     df["nBit"] = nBit
-    df["nbb"] = nbbs[:, 0]
-    df["nTl"] = nTls[:, 0]
-    df["nBi"] = nBis[:, 0]
-    df["sbb"] = nbbs[:, 1]
-    df["sTl"] = nTls[:, 1]
-    df["sBi"] = nBis[:, 1]
+    df["nbb"]  = nbbs[:, 0]
+    df["nTl"]  = nTls[:, 0]
+    df["nBi"]  = nBis[:, 0]
+    df["sbb"]  = nbbs[:, 1]
+    df["sTl"]  = nTls[:, 1]
+    df["sBi"]  = nBis[:, 1]
 
     df.to_csv(out_filename, index=False)
