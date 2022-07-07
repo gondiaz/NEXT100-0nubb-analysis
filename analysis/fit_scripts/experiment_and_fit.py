@@ -49,10 +49,13 @@ with tb.open_file(sel_filename) as h5file:
 
     h = h5file.root.energy.bb0nu.read()
     pdf_energy_bb = create_pdf_from_histogram(bins, h, energy_obs, name)
+    if fit_type == "typeIII": pdf_energy_bb_bkg = create_pdf_from_histogram(bins, h, energy_obs, name)
     h = h5file.root.energy.Bi.read()
     pdf_energy_Bi = create_pdf_from_histogram(bins, h, energy_obs, name)
+    if fit_type == "typeIII": pdf_energy_Bi_bkg = create_pdf_from_histogram(bins, h, energy_obs, name)
     h = h5file.root.energy.Tl.read()
     pdf_energy_Tl = create_pdf_from_histogram(bins, h, energy_obs, name)
+    if fit_type == "typeIII": pdf_energy_Tl_bkg = create_pdf_from_histogram(bins, h, energy_obs, name)
 
     # eblob2
     name = "eblob2"
@@ -110,6 +113,25 @@ if fit_type == "typeII":
     pdf_Bi.set_yield(nBi)
     model = zfit.pdf.SumPDF(pdfs=[pdf_bb, pdf_Tl, pdf_Bi])
 
+if fit_type == "typeIII":
+    pdf_energy_bb.set_yield(nbb)
+    pdf_energy_Tl.set_yield(nTl)
+    pdf_energy_Bi.set_yield(nBi)
+    model = zfit.pdf.SumPDF(pdfs=[pdf_energy_bb, pdf_energy_Tl, pdf_energy_Bi])
+
+    # background
+    eff_bb = zfit.param.ConstantParameter("eff_bb", 0.323)
+    eff_Tl = zfit.param.ConstantParameter("eff_Tl", 0.8985)
+    eff_Bi = zfit.param.ConstantParameter("eff_Bi", 0.8985)
+    mult_params = lambda *params: params[0]*params[1]
+    eff_n_bb = zfit.ComposedParameter("eff_n_bb", mult_params, params=[eff_bb, nbb])
+    eff_n_Tl = zfit.ComposedParameter("eff_n_Tl", mult_params, params=[eff_Tl, nTl])
+    eff_n_Bi = zfit.ComposedParameter("eff_n_Bi", mult_params, params=[eff_Bi, nBi])
+    pdf_energy_bb_bkg.set_yield(eff_n_bb)
+    pdf_energy_Tl_bkg.set_yield(eff_n_Tl)
+    pdf_energy_Bi_bkg.set_yield(eff_n_Bi)
+    model_bkg = zfit.pdf.SumPDF(pdfs=[pdf_energy_bb_bkg, pdf_energy_Tl_bkg, pdf_energy_Bi_bkg])
+
 minimizer = zfit.minimize.Minuit(gradient=True)
 
 if __name__ == "__main__":
@@ -142,21 +164,45 @@ if __name__ == "__main__":
             nTlt.append(len(Tl_selected_sample))
             nBit.append(len(Bi_selected_sample))
 
+            nll = zfit.loss.ExtendedUnbinnedNLL(model, data)
+            result = minimizer.minimize(nll)
+            result.hesse()
+
         if fit_type == "typeII":
             data = zfit.Data.from_numpy(obs=energy_obs * eblob2_obs, array=sample)
             nbbt.append(nevents.get("0nubb"))
             nTlt.append(nevents.get("208Tl"))
             nBit.append(nevents.get("214Bi"))
 
-        nll = zfit.loss.ExtendedUnbinnedNLL(model, data)
-        result = minimizer.minimize(nll)
-        result.hesse()
+            nll = zfit.loss.ExtendedUnbinnedNLL(model, data)
+            result = minimizer.minimize(nll)
+            result.hesse()
+
+        if fit_type == "typeIII":
+            Eb2 = 0.54
+            bb_selected_sample = bb_sample[bb_sample[:, -1]<Eb2]
+            Tl_selected_sample = Tl_sample[Tl_sample[:, -1]<Eb2]
+            Bi_selected_sample = Bi_sample[Bi_sample[:, -1]<Eb2]
+            selected_sample = np.concatenate([bb_selected_sample, Tl_selected_sample, Bi_selected_sample])
+            data          = zfit.Data.from_numpy(obs=energy_obs, array=         sample[:, 0])
+            selected_data = zfit.Data.from_numpy(obs=energy_obs, array=selected_sample[:, 0])
+            nbbt.append(len(bb_sample))
+            nTlt.append(len(Tl_sample))
+            nBit.append(len(Bi_sample))
+
+            nll     = zfit.loss.ExtendedUnbinnedNLL(model    , data)
+            nll_bkg = zfit.loss.ExtendedUnbinnedNLL(model_bkg, selected_data)
+            nll_simultaneous = nll + nll_bkg
+            result = minimizer.minimize(nll_simultaneous)
+            result.hesse()
 
         # append fit result
         valid.append(result.valid)
         nbbs.append((result.params["nbb"]["value"], result.params["nbb"]["hesse"]["error"]))
         nTls.append((result.params["nTl"]["value"], result.params["nTl"]["hesse"]["error"]))
         nBis.append((result.params["nBi"]["value"], result.params["nBi"]["hesse"]["error"]))
+
+        zfit.run.clear_graph_cache()
 
     nbbs = np.array(nbbs)
     nTls = np.array(nTls)
