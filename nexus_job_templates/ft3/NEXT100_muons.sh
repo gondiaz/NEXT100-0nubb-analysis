@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Job options
-NEVENTS=50000 # 2e-4 eff for 2 < E < 3 MeV
+NEVENTS=100000
 RNDSEED={RNDSEED}
 STARTID=$(( (RNDSEED-1)*NEVENTS ))
 
@@ -70,8 +70,8 @@ echo "/Generator/MuonAngleGenerator/angle_dist za"           >> $CFG_MACRO
 echo "/Generator/MuonAngleGenerator/max_energy 2000 GeV"     >> $CFG_MACRO
 
 # actions
-echo "/Actions/DefaultEventAction/min_energy 2.0 MeV"        >> $CFG_MACRO
-echo "/Actions/DefaultEventAction/max_energy 3.0 MeV"        >> $CFG_MACRO
+echo "/Actions/DefaultEventAction/min_energy 2.4 MeV"        >> $CFG_MACRO
+echo "/Actions/DefaultEventAction/max_energy 2.5 MeV"        >> $CFG_MACRO
 
 # geometry
 echo "/Geometry/Next100/max_step_size  1.  mm"        >> $CFG_MACRO
