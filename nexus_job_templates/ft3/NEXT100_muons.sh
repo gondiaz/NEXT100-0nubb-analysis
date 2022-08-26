@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Job options
-NEVENTS=100000
+NEVENTS=450000 # efficiency 2.2e-5 for deposited energy between 2.4-2.5 MeV
 RNDSEED={RNDSEED}
 STARTID=$(( (RNDSEED-1)*NEVENTS ))
 
