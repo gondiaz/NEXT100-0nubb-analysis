@@ -10,9 +10,8 @@ def mean_upper_limit(b, cl=90):
     fc = FeldmanCousins(cl)
     return fc.AverageUpperLimit(b)
 
-
-background_rates = np.arange(0.5, 4, 0.1) # background rate (1/years)
-exposures        = np.arange(1, 6+1, 0.5) # exposure (years)
+background_rates = np.arange(0.2, 0.5, 0.025) # background rate (1/years)
+exposures        = np.arange(1, 6+0.5, 0.5) # exposure (years)
 
 df = pd.DataFrame(columns=exposures)
 for i, c in enumerate(background_rates, 1):
@@ -23,4 +22,4 @@ for i, c in enumerate(background_rates, 1):
     Ul = mean_upper_limit(c * exposures)
     df.loc[c] = Ul
 
-df.to_csv("fc_upper_lims.csv")
+df.to_csv("fc_upper_lims_new.csv")

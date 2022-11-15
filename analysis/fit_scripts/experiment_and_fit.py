@@ -5,7 +5,8 @@ import numpy  as np
 import pandas as pd
 os.environ["ZFIT_DISABLE_TF_WARNINGS"] = "1"
 import zfit
-zfit.settings.changed_warnings.all = False
+import hist
+
 from invisible_cities.database.load_db     import RadioactivityData
 from invisible_cities.core.system_of_units import year, s, kg, dalton, mBq, m, cm
 
@@ -31,12 +32,26 @@ detector_db = "next100"
 
 # PDFs
 def create_pdf(array, obs, obs_ext):
+    lim = 6000
+    if len(array)>lim:
+        array = np.random.choice(array, lim, replace=False)
+
     data = zfit.Data.from_numpy (obs=obs_ext, array=array)
     pdf  = zfit.pdf.KDE1DimExact(obs=obs, data=data, bandwidth="adaptive_zfit")
     return pdf
 
+def create_pdf_from_hist(array, bins, obs):
+    obs_ext = zfit.Space("obs_ext", limits=(bins[0], bins[-1]))
+    binc = (bins[1:] + bins[:-1])/2.
+    histo, _ = np.histogram(array, bins=bins)
+    h    = hist.Hist(hist.axis.Variable(edges=bins, name="obs_ext"), data=histo)
+    pdf  = zfit.pdf.HistogramPDF(h)
+    data = zfit.Data.from_numpy (obs=obs_ext, array=binc, weights=h)
+    pdf  = zfit.pdf.KDE1DimExact(obs=obs, data=data, bandwidth="adaptive_zfit")
+    return pdf
+
 energy_obs_ext = zfit.Space("energy", limits=(2.40, 2.50))
-energy_obs     = zfit.Space("energy", limits=(2.42, 2.48))
+energy_obs     = zfit.Space("energy", limits=(2.42, 2.49))
 eblob2_obs     = zfit.Space("eblob2", limits=(0.00, 1.20))
 
 eff_df = pd.read_hdf(pdf_filename, "efficiencies")
@@ -75,6 +90,16 @@ N0 = enrichment*(xenon_mass/(136. * dalton))
 
 # activities
 act_df, _ = RadioactivityData("next100")
+
+# hack for new activities
+filename = "../NEXT100_newcopper.ods"
+df = pd.read_excel(filename, sheet_name=" DB  ACTIVITIES")
+df = df.drop(["Unnamed: 1", "Co-60", "K-40", "NEXT100 TOTAL ACTIVITIES FOR DB"], axis=1)
+df = df.rename({"NEXUS VOLUME": "G4Volume", "Bi-214": "214Bi", "Tl-208": "208Tl"}, axis=1)
+df = pd.melt(df, id_vars="G4Volume", value_vars=["208Tl", "214Bi"])
+df = df.rename({"variable": "Isotope", "value": "TotalActivity"}, axis=1)
+act_df = df
+
 act_df.loc[len(act_df)] = (   "ACTIVE", "137Xe", muon_activity*3.965e-05) # Xe137 per muon
 act_df = act_df.set_index(["Isotope", "G4Volume"])
 # simulated exposure
@@ -122,10 +147,10 @@ if fit_type == "typeIII":
     model = zfit.pdf.SumPDF(pdfs=[pdf_energy_bb, pdf_energy_Tl, pdf_energy_Bi, pdf_energy_Xe])
 
     # background
-    eff_bb = zfit.param.ConstantParameter("eff_bb", 0.323)
-    eff_Tl = zfit.param.ConstantParameter("eff_Tl", 0.8985)
-    eff_Bi = zfit.param.ConstantParameter("eff_Bi", 0.8985)
-    eff_Xe = zfit.param.ConstantParameter("eff_Xe", 0.8985)
+    eff_bb = zfit.param.ConstantParameter("eff_bb", 0.32)
+    eff_Tl = zfit.param.ConstantParameter("eff_Tl", 0.90)
+    eff_Bi = zfit.param.ConstantParameter("eff_Bi", 0.90)
+    eff_Xe = zfit.param.ConstantParameter("eff_Xe", 0.93)
     mult_params = lambda *params: params[0]*params[1]
     eff_n_bb = zfit.ComposedParameter("eff_n_bb", mult_params, params=[eff_bb, nbb])
     eff_n_Tl = zfit.ComposedParameter("eff_n_Tl", mult_params, params=[eff_Tl, nTl])
@@ -155,7 +180,7 @@ if __name__ == "__main__":
 
         # fit strategies
         if fit_type == "typeI":
-            Eb2 = 0.54
+            Eb2 = 0.57
             bb_selected_sample = bb_sample[bb_sample[:, -1]>Eb2]
             Tl_selected_sample = Tl_sample[Tl_sample[:, -1]>Eb2]
             Bi_selected_sample = Bi_sample[Bi_sample[:, -1]>Eb2]
@@ -169,7 +194,7 @@ if __name__ == "__main__":
 
             nll = zfit.loss.ExtendedUnbinnedNLL(model, data)
             result = minimizer.minimize(nll)
-            result.hesse()
+            result.hesse(method="minuit_hesse", name="hesse")
 
         if fit_type == "typeII":
             data = zfit.Data.from_numpy(obs=energy_obs * eblob2_obs, array=sample)
@@ -180,10 +205,10 @@ if __name__ == "__main__":
 
             nll = zfit.loss.ExtendedUnbinnedNLL(model, data)
             result = minimizer.minimize(nll)
-            result.hesse()
+            result.hesse(method="minuit_hesse", name="hesse")
 
         if fit_type == "typeIII":
-            Eb2 = 0.54
+            Eb2 = 0.57
             bb_selected_sample = bb_sample[bb_sample[:, -1]<Eb2]
             Tl_selected_sample = Tl_sample[Tl_sample[:, -1]<Eb2]
             Bi_selected_sample = Bi_sample[Bi_sample[:, -1]<Eb2]
@@ -199,7 +224,7 @@ if __name__ == "__main__":
             nll_bkg = zfit.loss.ExtendedUnbinnedNLL(model_bkg, selected_data)
             nll_simultaneous = nll + nll_bkg
             result = minimizer.minimize(nll_simultaneous)
-            result.hesse()
+            result.hesse(method="minuit_hesse", name="hesse")
 
         # append fit result
         valid.append(result.valid)
